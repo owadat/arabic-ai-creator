@@ -1,0 +1,7 @@
+'use strict';
+const $=id=>document.getElementById(id);const result=$('result');const status=$('status');
+function updateType(){const image=$('type').value==='image';$('duration').disabled=image;$('audio').disabled=image;}
+$('type').addEventListener('change',updateType);updateType();
+$('builder').addEventListener('submit',e=>{e.preventDefault();try{result.value=buildPrompt({idea:$('idea').value,type:$('type').value,style:$('style').value,ratio:$('ratio').value,light:$('light').value,duration:$('duration').value,language:$('language').value,audio:$('audio').value,safe:$('safe').checked});status.textContent='تم إنشاء البرومبت.';}catch{status.textContent='يرجى إدخال وصف للمشهد.';$('idea').focus();}});
+$('copy').addEventListener('click',async()=>{if(!result.value.trim()){status.textContent='أنشئ البرومبت أولاً.';return;}try{await navigator.clipboard.writeText(result.value);status.textContent='تم النسخ.';}catch{result.focus();result.select();try{status.textContent=document.execCommand('copy')?'تم النسخ.':'النص محدد؛ انسخه يدويًا.';}catch{status.textContent='النص محدد؛ انسخه يدويًا.';}}});
+$('save').addEventListener('click',()=>{if(!result.value.trim()){status.textContent='أنشئ البرومبت أولاً.';return;}const url=URL.createObjectURL(new Blob([result.value],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='ai-prompt.txt';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='تم طلب حفظ الملف.';});
